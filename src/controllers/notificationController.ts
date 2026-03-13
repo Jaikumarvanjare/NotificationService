@@ -10,9 +10,21 @@ export const createNotification = async (
 
     const { subject, recepientEmails, content } = req.body;
 
+    if (!subject) {
+      return res.status(400).json({
+        message: "Subject is required"
+      });
+    }
+
     if (!recepientEmails || recepientEmails.length === 0) {
       return res.status(400).json({
         message: "Recipient email required"
+      });
+    }
+
+    if (!content) {
+      return res.status(400).json({
+        message: "Content is required"
       });
     }
 
@@ -20,6 +32,7 @@ export const createNotification = async (
 
     for (const email of recepientEmails) {
 
+      // save notification in DB
       const notification = await Notification.create({
         to: email,
         subject,
@@ -27,19 +40,28 @@ export const createNotification = async (
         status: "PENDING"
       });
 
-      // push job to queue
-      await notificationQueue.add("sendEmail", {
-        email,
-        subject,
-        content,
-        notificationId: notification._id
-      });
+      // push job to BullMQ queue
+      await notificationQueue.add(
+        "sendEmail",
+        {
+          email,
+          subject,
+          content,
+          notificationId: notification._id
+        },
+        {
+          attempts: 3,
+          backoff: {
+            type: "exponential",
+            delay: 5000
+          }
+        }
+      );
 
       results.push({
         email,
         status: "QUEUED"
       });
-
     }
 
     return res.status(200).json({
@@ -49,9 +71,10 @@ export const createNotification = async (
 
   } catch (error) {
 
+    console.error("Notification processing failed:", error);
+
     return res.status(500).json({
-      message: "Notification processing failed",
-      error
+      message: "Notification processing failed"
     });
 
   }
