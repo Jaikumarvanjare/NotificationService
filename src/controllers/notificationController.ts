@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 import Notification from "../models/notificationModel";
 import { sendEmail } from "../services/emailService";
 
-export const createNotification = async (req: Request, res: Response) => {
+export const createNotification = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-
     const { subject, recepientEmails, content } = req.body;
 
     if (!recepientEmails || recepientEmails.length === 0) {
