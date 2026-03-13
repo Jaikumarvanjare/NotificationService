@@ -1,0 +1,1 @@
+export const API_PREFIX = "/notiservice/api/v1";

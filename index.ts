@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./src/config/db";
 import notificationRoutes from "./src/routes/notificationRoutes";
+import { API_PREFIX } from "./src/config/apiConfig";
+import { serverAdapter } from "./src/config/queueDashboard";
 
 dotenv.config();
 
@@ -11,7 +13,8 @@ app.use(express.json());
 
 connectDB();
 
-app.use("/notiservice/api/v1", notificationRoutes);
+app.use(API_PREFIX, notificationRoutes);
+app.use("/admin/queues", serverAdapter.getRouter());
 
 app.get("/", (req, res) => {
   res.send("Notification Service Running");

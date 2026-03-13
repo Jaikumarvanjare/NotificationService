@@ -8,7 +8,7 @@ export const createNotification = async (
 ): Promise<Response> => {
   try {
 
-    const { subject, recepientEmails, content } = req.body;
+    const { subject, recepientEmails, content, delay } = req.body;
 
     if (!subject) {
       return res.status(400).json({
@@ -32,7 +32,6 @@ export const createNotification = async (
 
     for (const email of recepientEmails) {
 
-      // save notification in DB
       const notification = await Notification.create({
         to: email,
         subject,
@@ -40,7 +39,6 @@ export const createNotification = async (
         status: "PENDING"
       });
 
-      // push job to BullMQ queue
       await notificationQueue.add(
         "sendEmail",
         {
@@ -54,7 +52,8 @@ export const createNotification = async (
           backoff: {
             type: "exponential",
             delay: 5000
-          }
+          },
+          delay: delay || 0
         }
       );
 
@@ -76,6 +75,5 @@ export const createNotification = async (
     return res.status(500).json({
       message: "Notification processing failed"
     });
-
   }
 };
