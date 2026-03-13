@@ -5,7 +5,7 @@ import { validateNotificationRequest } from "../middlewares/notificationValidato
 const router = express.Router();
 
 router.post(
-  "/notiservice/api/v1/notifications",
+  "/notifications",
   validateNotificationRequest,
   createNotification
 );

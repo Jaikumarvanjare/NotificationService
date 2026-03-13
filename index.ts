@@ -11,7 +11,7 @@ app.use(express.json());
 
 connectDB();
 
-app.use(notificationRoutes);
+app.use("/notiservice/api/v1", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Notification Service Running");
