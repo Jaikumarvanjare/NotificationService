@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import Notification from "../models/notificationModel";
-import { sendEmail } from "../services/emailService";
+import { notificationQueue } from "../queues/notificationQueue";
 
 export const createNotification = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
+
     const { subject, recepientEmails, content } = req.body;
 
     if (!recepientEmails || recepientEmails.length === 0) {
@@ -26,33 +27,23 @@ export const createNotification = async (
         status: "PENDING"
       });
 
-      try {
+      // push job to queue
+      await notificationQueue.add("sendEmail", {
+        email,
+        subject,
+        content,
+        notificationId: notification._id
+      });
 
-        await sendEmail(email, subject, content);
+      results.push({
+        email,
+        status: "QUEUED"
+      });
 
-        notification.status = "SENT";
-        await notification.save();
-
-        results.push({
-          email,
-          status: "SENT"
-        });
-
-      } catch (error) {
-
-        notification.status = "FAILED";
-        await notification.save();
-
-        results.push({
-          email,
-          status: "FAILED"
-        });
-
-      }
     }
 
     return res.status(200).json({
-      message: "Notifications processed",
+      message: "Notifications queued successfully",
       data: results
     });
 
