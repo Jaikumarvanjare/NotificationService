@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { EMAIL_USER, EMAIL_PASS } from "../config/serviceConfig";
+import logger from "../utils/logger";
 
 export const sendEmail = async (
   to: string,
@@ -24,12 +25,12 @@ export const sendEmail = async (
 
     const info = await transporter.sendMail(mailOptions);
 
-    console.log("Email sent:", info.messageId);
+    logger.info(`Email sent: ${info.messageId}`);
 
     return info;
 
   } catch (error) {
-    console.error("Email sending failed:", error);
+    logger.error(`Email sending failed: ${error}`);
     throw error;
   }
 };

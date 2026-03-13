@@ -14,9 +14,9 @@ export const validateNotificationRequest = (
     });
   }
 
-  if (!recepientEmails || recepientEmails.length === 0) {
+  if (!recepientEmails || !Array.isArray(recepientEmails) || recepientEmails.length === 0) {
     return res.status(400).json({
-      message: "Recipient emails are required"
+      message: "Recipient emails must be a non-empty array"
     });
   }
 

@@ -2,6 +2,7 @@ import { Worker } from "bullmq";
 import { sendEmail } from "../services/emailService";
 import Notification from "../models/notificationModel";
 import { connectDB } from "../config/db";
+import logger from "../utils/logger";
 
 async function startWorker() {
   await connectDB();
@@ -15,13 +16,13 @@ async function startWorker() {
         await Notification.findByIdAndUpdate(notificationId, {
           status: "SENT"
         });
-        console.log("Email sent:", email);
+        logger.info("Email sent:", email);
 
       } catch (error) {
         await Notification.findByIdAndUpdate(notificationId, {
           status: "FAILED"
         });
-        console.error("Email failed:", email);
+        logger.error("Email failed:", email);
         throw error;
       }
     },
@@ -34,7 +35,7 @@ async function startWorker() {
   );
 
   worker.on("failed", (job, err) => {
-    console.error(`Job ${job?.id} failed`, err);
+    logger.error(`Job ${job?.id} failed`, err);
   });
 }
 startWorker();

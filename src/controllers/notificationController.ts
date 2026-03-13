@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Notification from "../models/notificationModel";
 import { notificationQueue } from "../queues/notificationQueue";
+import logger from "../utils/logger";
 
 export const createNotification = async (
   req: Request,
@@ -9,24 +10,6 @@ export const createNotification = async (
   try {
 
     const { subject, recepientEmails, content, delay } = req.body;
-
-    if (!subject) {
-      return res.status(400).json({
-        message: "Subject is required"
-      });
-    }
-
-    if (!recepientEmails || recepientEmails.length === 0) {
-      return res.status(400).json({
-        message: "Recipient email required"
-      });
-    }
-
-    if (!content) {
-      return res.status(400).json({
-        message: "Content is required"
-      });
-    }
 
     const results = [];
 
@@ -70,7 +53,7 @@ export const createNotification = async (
 
   } catch (error) {
 
-    console.error("Notification processing failed:", error);
+    logger.error(`Notification processing failed: ${error}`);
 
     return res.status(500).json({
       message: "Notification processing failed"

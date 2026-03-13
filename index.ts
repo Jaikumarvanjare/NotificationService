@@ -1,9 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
+
 import { connectDB } from "./src/config/db";
-import notificationRoutes from "./src/routes/notificationRoutes";
 import { API_PREFIX } from "./src/config/apiConfig";
 import { serverAdapter } from "./src/config/queueDashboard";
+import { PORT } from "./src/config/serviceConfig";
+
+import notificationRoutes from "./src/routes/notificationRoutes";
+import { errorHandler } from "./src/middlewares/errorHandler";
+import logger from "./src/utils/logger";
 
 dotenv.config();
 
@@ -14,14 +19,22 @@ app.use(express.json());
 connectDB();
 
 app.use(API_PREFIX, notificationRoutes);
+
 app.use("/admin/queues", serverAdapter.getRouter());
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    service: "notification-service"
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("Notification Service Running");
 });
 
-const PORT = process.env.PORT || 3001;
+app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log("Notification server started");
+  logger.info(`Notification server started on port ${PORT}`);
 });
