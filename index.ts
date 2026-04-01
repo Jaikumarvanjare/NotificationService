@@ -9,6 +9,8 @@ import { PORT } from "./src/config/serviceConfig";
 import notificationRoutes from "./src/routes/notificationRoutes";
 import { errorHandler } from "./src/middlewares/errorHandler";
 import logger from "./src/utils/logger";
+import "./src/config/redis";
+import "./src/workers/emailWorker";  
 
 dotenv.config();
 

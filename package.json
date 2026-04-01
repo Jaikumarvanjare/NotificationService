@@ -1,13 +1,15 @@
 {
   "name": "notificationserver",
-  "module": "index.ts",
-  "type": "module",
   "private": true,
+  "scripts": {
+    "start": "ts-node index.ts",
+    "worker": "ts-node src/workers/emailWorker.ts"
+  },
   "devDependencies": {
-    "@types/bun": "latest",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
-    "@types/nodemailer": "^7.0.11"
+    "@types/nodemailer": "^7.0.11",
+    "ts-node": "^10.9.2"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
