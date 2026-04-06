@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 
 import { connectDB } from "./src/config/db";
@@ -9,8 +9,6 @@ import { PORT } from "./src/config/serviceConfig";
 import notificationRoutes from "./src/routes/notificationRoutes";
 import { errorHandler } from "./src/middlewares/errorHandler";
 import logger from "./src/utils/logger";
-import "./src/config/redis";
-import "./src/workers/emailWorker";  
 
 dotenv.config();
 
@@ -24,14 +22,14 @@ app.use(API_PREFIX, notificationRoutes);
 
 app.use("/admin/queues", serverAdapter.getRouter());
 
-app.get("/health", (req, res) => {
+app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "OK",
     service: "notification-service"
   });
 });
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Notification Service Running");
 });
 

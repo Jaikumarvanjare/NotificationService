@@ -1,8 +1,8 @@
 import { Queue } from "bullmq";
+import { REDIS_URL } from "../config/serviceConfig";
 
 export const notificationQueue = new Queue("notificationQueue", {
   connection: {
-    host: "127.0.0.1",
-    port: 6379
+    url: REDIS_URL as string
   }
 });
