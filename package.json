@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "worker": "node dist/workers/emailWorker.js",
+    "worker": "node dist/worker.js",
+    "worker:dev": "ts-node worker.ts",
     "dev": "ts-node index.ts"
   },
   "dependencies": {
